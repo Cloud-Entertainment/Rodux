@@ -1,6 +1,6 @@
 [package]
-name = "roblox/rodux"
-version = "4.0.0-rc.0"
+name = "cloud-entertainment/rodux"
+version = "4.0.1-rc.0"
 license = "Apache-2.0"
-registry = "https://github.com/UpliftGames/wally-index"
+registry = "https://github.com/Cloud-Entertainment/wally-index"
 realm = "shared"
