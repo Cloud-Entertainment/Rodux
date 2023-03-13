@@ -543,4 +543,169 @@ return function()
 			store:destruct()
 		end)
 	end)
+
+	describe("bindToValueChanged / unbindFromValueChanged", function()
+		local numberWorked = 0
+		local tableWorked = 0
+
+		local initialState = {
+			value = 0;
+			testTable = {
+				testValue = 0;
+			};
+		}
+
+		local store = Store.new(function(state, action)
+			state = state or initialState
+
+			if action.type == "increment" then
+				return {
+					value = state.value + 1,
+					testTable = state.testTable
+				}
+			elseif action.type == "decrement" then
+				return {
+					value = state.value - 1,
+					testTable = state.testTable
+				}
+			elseif action.type == "changeTable" then
+				return {
+					value = state.value,
+					testTable = {
+						testValue = state.testTable.testValue + 1;
+					};
+				}
+			end
+
+			return state
+		end, initialState)
+
+		local numberBind
+		local tableBind
+
+		it("should run the binded function when the store is updated", function()
+			numberBind = store:bindToValueChanged(function(newVal, oldVal)
+				if numberWorked == 0 then
+					expect(oldVal).to.equal(0)
+					expect(newVal).to.equal(1)
+				elseif numberWorked == 1 then
+					expect(oldVal).to.equal(1)
+					expect(newVal).to.equal(0)
+				end
+
+				numberWorked += 1
+			end, "value")
+
+			store:dispatch({
+				type = "increment"
+			})
+
+			store.changed:wait()
+
+			expect(numberWorked).to.equal(1)
+
+			store:dispatch({
+				type = "decrement"
+			})
+
+			store.changed:wait()
+
+			expect(numberWorked).to.equal(2)
+
+			tableBind = store:bindToValueChanged(function(newVal, oldVal)
+				if tableWorked == 0 then
+					expect(oldVal).to.equal(0)
+					expect(newVal).to.equal(1)
+				elseif tableWorked == 1 then
+					expect(oldVal).to.equal(1)
+					expect(newVal).to.equal(2)
+				end
+
+				tableWorked += 1
+			end, "testTable", "testValue")
+
+			store:dispatch({
+				type = "changeTable"
+			})
+
+			store.changed:wait()
+
+			expect(tableWorked).to.equal(1)
+
+			store:dispatch({
+				type = "changeTable"
+			})
+
+			store.changed:wait()
+
+			expect(tableWorked).to.equal(2)
+			expect(numberWorked).to.equal(2)
+		end)
+
+		it("should unbind the callback from the rodux store", function()
+			store:unbindFromValueChanged(numberBind)
+
+			store:dispatch({
+				type = "increment"
+			})
+
+			store.changed:wait()
+
+			expect(numberWorked).to.equal(2)
+
+			store:unbindFromValueChanged(tableBind)
+
+			store:dispatch({
+				type = "changeTable"
+			})
+
+			store.changed:wait()
+
+			expect(tableWorked).to.equal(2)
+		end)
+	end)
+
+	describe("waitForValue", function()
+		it("should wait for a certain value to exist in the store", function()
+			local initialState = {
+				testTable = {};
+			}
+			
+			local store = Store.new(function(state, action)
+				state = state or initialState
+	
+				if action.type == "addVal" then
+					return {
+						testTable = {
+							testTable = true;
+						}
+					}
+				end
+	
+				return state
+			end, initialState)
+
+			local table1 = store:waitForValue("testTable")
+			expect(table1).to.be.a("table")
+
+			local waiting = true
+
+			local table2
+			task.spawn(function()
+				table2 = store:waitForValue("testTable", "testTable")
+				waiting = false
+			end)
+			
+			expect(waiting).to.equal(true)
+
+			store:dispatch({type = "addVal"})
+
+			store.changed:wait()
+
+			task.wait(1)
+
+			expect(table2).to.equal(true)
+			expect(waiting).to.equal(false)
+		end)
+	end)
 end
