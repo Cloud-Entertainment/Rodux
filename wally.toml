@@ -4,6 +4,7 @@ version = "4.0.1-rc.0"
 license = "Apache-2.0"
 registry = "https://github.com/Cloud-Entertainment/wally-index"
 realm = "shared"
+exclude = ["wally.exe"]
 
 [dependencies]
 Cryo = "cloud-entertainment/cryo@0.1.0"
