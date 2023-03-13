@@ -53,6 +53,7 @@ function Signal.new(store: Store?)
 	local self = {
 		_listeners = {},
 		_store = store,
+		_changedEvent = Instance.new("BindableEvent")
 	}
 
 	setmetatable(self, Signal)
@@ -113,12 +114,18 @@ function Signal:connect(callback)
 	}
 end
 
+function Signal:wait()
+	self._changedEvent.Event:Wait()
+end
+
 function Signal:fire(...)
 	for _, listener in ipairs(self._listeners) do
 		if not listener.disconnected then
 			listener.callback(...)
 		end
 	end
+
+	self._changedEvent:Fire()
 end
 
 return Signal
