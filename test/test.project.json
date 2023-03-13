@@ -1,0 +1,39 @@
+{
+	"name": "Rodux",
+	"tree": {
+		"$className": "DataModel",
+
+		"ReplicatedStorage": {
+			"$className": "ReplicatedStorage",
+			"DevPackages": {
+				"$path": "../DevPackages"
+			},
+			"Packages": {
+				"$className": "Folder",
+				"$path": "../Packages",
+				"Rodux": {
+					"$path": "../default.project.json"
+				}
+			}
+		},
+
+		"ServerScriptService": {
+			"$className": "ServerScriptService",
+			"TestExecution": {
+				"$path": "TestExecution.server.lua"
+			}
+		},
+
+		"StarterPlayer": {
+			"$className": "StarterPlayer",
+			"StarterPlayerScripts": {
+				"$className": "StarterPlayerScripts",
+				"$ignoreUnknownInstances": true,
+				"TestExecution": {
+					"$path": "TestExecution.client.lua"
+				}
+			},
+			"$ignoreUnknownInstances": true
+		}
+	}
+}
