@@ -1,7 +1,10 @@
 local RunService = game:GetService("RunService")
+local HttpService = game:GetService("HttpService")
 
-local Signal = require(script.Parent.Signal)
 local NoYield = require(script.Parent.NoYield)
+local Signal = require(script.Parent.Signal)
+local Hierarchy = require(script.Parent.Parent.Hierarchy)
+local Cryo = require(script.Parent.Parent.Cryo)
 
 local ACTION_LOG_LENGTH = 3
 
@@ -82,6 +85,31 @@ function Store.new(reducer, initialState, middlewares, errorReporter)
 		self:flush()
 	end)
 	table.insert(self._connections, connection)
+
+	self._changedBinds = {}
+	self._changedBindsProcessor = self.changed:connect(function(newState, oldState)
+
+		for _, bind in pairs(self._changedBinds) do
+			local newValue = Hierarchy.getDictionaryPath(newState, unpack(bind.path))
+			local oldValue = Hierarchy.getDictionaryPath(oldState, unpack(bind.path))
+
+			local changed = false
+			local newType = typeof(newValue)
+			local oldType = typeof(oldValue)
+
+			if newType ~= oldType then
+				changed = true
+			elseif newType == "table" and oldType == "table" then
+				changed = not Cryo.Dictionary.equalsDeep(newValue, oldValue)
+			elseif newValue ~= oldValue then
+				changed  = true
+			end
+
+			if not changed then continue end
+
+			task.spawn(bind.callback, newValue, oldValue)
+		end
+	end)
 
 	if middlewares then
 		local unboundDispatch = self.dispatch
@@ -207,6 +235,41 @@ function Store:flush()
 	end
 
 	self._lastState = state
+end
+
+--[[
+	Fires the given function when the given value is changed
+]]
+function Store:bindToValueChanged(callback, ...)
+	local path = {...}
+	local handle = HttpService:GenerateGUID(false)
+	self._changedBinds[handle] = {
+		callback = callback;
+		path = path;
+	}
+	return handle
+end
+
+function Store:unbindFromValueChanged(handle)
+	if self._changedBinds[handle] then
+		self._changedBinds[handle] = nil
+		return true
+	end
+	return false
+end
+
+--[[
+	Yields until the path is no longer nil in the store
+]]
+function Store:waitForValue(...)
+	local value = Hierarchy.getDictionaryPath(self:getState(), ...)
+
+	while value == nil do
+		local newState = self.changed:wait()
+		value = Hierarchy.getDictionaryPath(newState, ...)
+	end
+
+	return value
 end
 
 return Store
