@@ -116,6 +116,8 @@ end
 
 function Signal:wait()
 	self._changedEvent.Event:Wait()
+
+	return self._store:getState()
 end
 
 function Signal:fire(...)
