@@ -66,3 +66,39 @@ Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for informatio
 
 ## License
 Rodux is available under the Apache 2.0 license. See [LICENSE](LICENSE) for details.
+
+## Cloud Entertainment API
+
+**Store:bindToValueChanged**
+
+Binds the given callback function to the store changed event, but only runs when the specified value has changed. Returns a handle to be used in Store:unbindFromValueChanged(handle) to unbind this callback.
+
+`Store:bindToValueChanged(callback, ...)`
+
+**Parameters**
+- **callback [function]:** The function you want to run when then specified value changes.
+- **... [tuple]:** The dictionary path of the value you want to listen for changes to (e.g. (callback, "liveOps", "worlds", "world1") will listen for when the world1 table changes in live ops).
+
+<br>
+
+
+**Store:unbindFromValueChanged**
+
+Unbinds the given handle which is returned from Store:bindToValueChanged().
+
+`Store:unbindFromValueChanged(handle)`
+
+**Parameters**
+- **handle [function]:** The handle to be unbinded.
+
+<br>
+
+
+**Store:waitForValue**
+
+Unbinds the given handle which is returned from Store:bindToValueChanged().
+
+`Store:waitForValue(...)`
+
+**Parameters**
+- **... [tuple]:** The dictionary path for the value you want to wait for. Will yield until this value exists, and will return the value (e.g. :waitForValue("liveOps") will yield until the live ops table has been added to Rodux)
