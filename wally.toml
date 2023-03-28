@@ -1,13 +1,13 @@
 [package]
 name = "cloud-entertainment/rodux"
-version = "4.0.2-rc.0"
+version = "4.0.3"
 license = "Apache-2.0"
 registry = "https://github.com/Cloud-Entertainment/wally-index"
 realm = "shared"
 exclude = ["wally.exe"]
 
 [dependencies]
-Cryo = "cloud-entertainment/cryo@0.1.0"
+Cryo = "cloud-entertainment/cryo@0.1.1"
 Hierarchy = "cloud-entertainment/hierarchy@0.1.2"
 
 [dev-dependencies]

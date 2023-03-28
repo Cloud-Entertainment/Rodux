@@ -4,7 +4,7 @@ registry = "test"
 
 [[package]]
 name = "cloud-entertainment/cryo"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = []
 
 [[package]]
@@ -14,8 +14,8 @@ dependencies = []
 
 [[package]]
 name = "cloud-entertainment/rodux"
-version = "4.0.1-rc.0"
-dependencies = [["Cryo", "cloud-entertainment/cryo@0.1.0"], ["Hierarchy", "cloud-entertainment/hierarchy@0.1.2"]]
+version = "4.0.3"
+dependencies = [["Cryo", "cloud-entertainment/cryo@0.1.1"], ["Hierarchy", "cloud-entertainment/hierarchy@0.1.2"]]
 
 [[package]]
 name = "roblox/testez"
